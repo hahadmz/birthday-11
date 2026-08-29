@@ -341,7 +341,18 @@ if(bgm){
 function startMusic(){
   if(!bgm)return;
   bgm.volume=0.5;
-  bgm.play().then(function(){musOn=true}).catch(function(){musOn=false});
+  var p=bgm.play();
+  if(p&&p.then){
+    p.then(function(){musOn=true}).catch(function(){musOn=false});
+  }else{musOn=true}
+}
+if(bgm){
+  bgm.addEventListener("canplay",function(){
+    if(!musOn&&document.readyState==="complete"){autoPlay()}
+  });
+  bgm.addEventListener("canplaythrough",function(){
+    if(!musOn){autoPlay()}
+  });
 }
 function stopMusic(){if(bgm){bgm.pause();musOn=false}}
 var mb=document.getElementById("mus-btn");
@@ -353,15 +364,13 @@ if(mb){
 }
 /* 一进入网站就自动播放（手机浏览器需要首次点击/触摸手势后放行） */
 function autoPlay(){
-  if(musOn)return;
+  if(!bgm||musOn)return;
   startMusic();
   if(mb){mb.classList.add("on");mb.textContent="♪ 播放中"}
 }
-window.addEventListener("load",function(){setTimeout(autoPlay,600)});
-["touchstart","click","keydown"].forEach(function(ev){
-  document.addEventListener(ev,function once(){
-    setTimeout(autoPlay,120);
-  },{once:true,passive:true});
+window.addEventListener("load",function(){setTimeout(autoPlay,800)});
+["pointerdown","touchstart","click","keydown"].forEach(function(ev){
+  document.addEventListener(ev,function(){autoPlay()},{passive:true});
 });
 </script>
 <audio id="bgm" loop preload="auto"><source src="audio/celebrate_clean.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=2021659105.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1956782266.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1821851090.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1860986225.mp3" type="audio/mpeg"></audio>
