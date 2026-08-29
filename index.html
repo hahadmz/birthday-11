@@ -107,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .letter h2::after{content:"";position:absolute;left:0;bottom:0;width:78px;height:2px;background:linear-gradient(90deg,var(--pink),var(--violet),transparent);border-radius:2px;box-shadow:0 0 12px rgba(255,95,162,.6)}
 .letter .para{opacity:0;transform:translateY(18px);transition:opacity .9s ease,transform .9s ease,border-color .9s ease;margin-bottom:24px;font-size:15.5px;line-height:2.15;letter-spacing:.5px;color:#d8d8e4;padding-left:17px;border-left:1px solid transparent}
 .letter .para.show{opacity:1;transform:none;border-left-color:rgba(255,95,162,.4)}
-.letter .para::first-letter{color:var(--gold)}
+.letter .para::first-letter{color:inherit}
 .letter .final{opacity:0;transition:opacity 1.2s ease;margin-top:34px;font-size:21px;letter-spacing:3px;color:var(--pink);text-shadow:0 0 22px rgba(255,95,162,.7);line-height:2;text-align:center}
 .letter .final.show{opacity:1}
 .letter .sign{margin-top:44px;text-align:right;font-size:14.5px;color:#c9c9d8;letter-spacing:2.5px;position:relative;padding-right:8px}
@@ -296,11 +296,11 @@ function checkKey(){
   if(v.indexOf("多远都要在一起")>-1){
     msg.textContent="咔哒—— 锁开了。";
     msg.className="key-msg ok";
+    startMusic();
+    var mb=document.getElementById("mus-btn");if(mb){mb.classList.add("on");mb.textContent="♪ 播放中"}
     setTimeout(function(){
       document.getElementById("p-key").classList.remove("active");
       document.getElementById("p-jukebox").classList.add("active");
-      startMusic();
-      var mb=document.getElementById("mus-btn");if(mb){mb.classList.add("on");mb.textContent="♪ 播放中"}
     },700);
   }else{
     msg.textContent="再想想，你肯定知道的。";
@@ -351,8 +351,20 @@ if(mb){
     else{startMusic();mb.classList.add("on");mb.textContent="♪ 播放中"}
   };
 }
+/* 一进入网站就自动播放（手机浏览器需要首次点击/触摸手势后放行） */
+function autoPlay(){
+  if(musOn)return;
+  startMusic();
+  if(mb){mb.classList.add("on");mb.textContent="♪ 播放中"}
+}
+window.addEventListener("load",function(){setTimeout(autoPlay,600)});
+["touchstart","click","keydown"].forEach(function(ev){
+  document.addEventListener(ev,function once(){
+    setTimeout(autoPlay,120);
+  },{once:true,passive:true});
+});
 </script>
-<audio id="bgm" loop preload="none"><source src="audio/celebrate_clean.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=2021659105.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1956782266.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1821851090.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1860986225.mp3" type="audio/mpeg"></audio>
+<audio id="bgm" loop preload="auto"><source src="audio/celebrate_clean.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=2021659105.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1956782266.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1821851090.mp3" type="audio/mpeg"><source src="https://music.163.com/song/media/outer/url?id=1860986225.mp3" type="audio/mpeg"></audio>
 <button class="mus-btn" id="mus-btn" aria-label="背景音乐开关">♪ 音乐</button>
 </main>
 </body>
